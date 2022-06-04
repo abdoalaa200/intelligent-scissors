@@ -31,3 +31,12 @@ C:\Users\abdo\Downloads\algo\[TEMPLATE] IntelligentScissors\IntelligentScissors\
 C:\Users\abdo\Downloads\algo\[TEMPLATE] IntelligentScissors\IntelligentScissors\obj\Debug\IntelligentScissors.exe
 C:\Users\abdo\Downloads\algo\[TEMPLATE] IntelligentScissors\IntelligentScissors\obj\Debug\IntelligentScissors.pdb
 C:\Users\abdo\Downloads\algo\[TEMPLATE] IntelligentScissors\IntelligentScissors\obj\Debug\IntelligentScissors.csprojAssemblyReference.cache
+C:\Users\abdo\Downloads\intelligent-scissors-main\[TEMPLATE] IntelligentScissors\IntelligentScissors\bin\Debug\IntelligentScissors.exe
+C:\Users\abdo\Downloads\intelligent-scissors-main\[TEMPLATE] IntelligentScissors\IntelligentScissors\bin\Debug\IntelligentScissors.pdb
+C:\Users\abdo\Downloads\intelligent-scissors-main\[TEMPLATE] IntelligentScissors\IntelligentScissors\obj\Debug\IntelligentScissors.csprojAssemblyReference.cache
+C:\Users\abdo\Downloads\intelligent-scissors-main\[TEMPLATE] IntelligentScissors\IntelligentScissors\obj\Debug\IntelligentScissors.MainForm.resources
+C:\Users\abdo\Downloads\intelligent-scissors-main\[TEMPLATE] IntelligentScissors\IntelligentScissors\obj\Debug\IntelligentScissors.Properties.Resources.resources
+C:\Users\abdo\Downloads\intelligent-scissors-main\[TEMPLATE] IntelligentScissors\IntelligentScissors\obj\Debug\IntelligentScissors.csproj.GenerateResource.cache
+C:\Users\abdo\Downloads\intelligent-scissors-main\[TEMPLATE] IntelligentScissors\IntelligentScissors\obj\Debug\IntelligentScissors.csproj.CoreCompileInputs.cache
+C:\Users\abdo\Downloads\intelligent-scissors-main\[TEMPLATE] IntelligentScissors\IntelligentScissors\obj\Debug\IntelligentScissors.exe
+C:\Users\abdo\Downloads\intelligent-scissors-main\[TEMPLATE] IntelligentScissors\IntelligentScissors\obj\Debug\IntelligentScissors.pdb

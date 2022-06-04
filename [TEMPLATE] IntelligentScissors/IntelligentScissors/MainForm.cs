@@ -9,6 +9,8 @@ using System.IO;
 using System.Timers;
 using System.Diagnostics;
 using System.Threading;
+using System.Drawing.Drawing2D;
+
 namespace IntelligentScissors
 {
     public partial class MainForm : Form
@@ -21,6 +23,7 @@ namespace IntelligentScissors
         List<int> curr_pre = new List<int>();
         bool stop = false;
         int n, m;
+        Graphics g_free;
         public MainForm()
         {
             InitializeComponent();
@@ -36,6 +39,7 @@ namespace IntelligentScissors
                 n = ImageOperations.GetHeight(ImageMatrix);
                 m = ImageOperations.GetWidth(ImageMatrix);
                 ImageOperations.DisplayImage(ImageMatrix, pictureBox1);
+                g_free = pictureBox1.CreateGraphics();
                 txtWidth.Text = ImageOperations.GetWidth(ImageMatrix).ToString();
                 txtHeight.Text = ImageOperations.GetHeight(ImageMatrix).ToString();
             }
@@ -184,28 +188,13 @@ namespace IntelligentScissors
                     for (int i = 1; i < path.Count; i++)
                     {
                         complete_path.Add(path[i - 1]);
-
-                        Graphics g1 = pictureBox1.CreateGraphics();
-                        Pen p = new Pen(Color.Cyan, 2);
-                        float x1 = path[i - 1] % m;
-                        float y1 = path[i - 1] / m;
-                        float x2 = path[i] % m;
-                        float y2 = path[i] / m;
-                        g1.DrawLine(p, x1, y1, x2, y2);
                     }
                     complete_path.Add(path[path.Count - 1]);
-
                     anchor_points.Add(node);
-                    Graphics g = pictureBox1.CreateGraphics();
-                    Point anchorsize = new Point(5, 5);
-                    g.FillEllipse(Brushes.Green, new Rectangle(new Point(e.X - anchorsize.X / 2, e.Y - anchorsize.Y / 2), new Size(anchorsize)));
                 }
                 else if(anchor_points.Count==0)
                 {
                     anchor_points.Add(node);
-                    Graphics g = pictureBox1.CreateGraphics();
-                    Point anchorsize = new Point(5, 5);
-                    g.FillEllipse(Brushes.Green, new Rectangle(new Point(e.X - anchorsize.X / 2, e.Y - anchorsize.Y / 2), new Size(anchorsize)));
                 }
             }
         }
@@ -223,18 +212,9 @@ namespace IntelligentScissors
                     for (int i = 1; i < path.Count; i++)
                     {
                         complete_path.Add(path[i - 1]);
-
-                        Graphics g1 = pictureBox1.CreateGraphics();
-                        Pen p = new Pen(Color.Red, 2);
-                        float x1 = path[i - 1] % m;
-                        float y1 = path[i - 1] / m;
-                        float x2 = path[i] % m;
-                        float y2 = path[i] / m;
-                        g1.DrawLine(p, x1, y1, x2, y2);
                     }
                     complete_path.Add(path[path.Count - 1]);
                     pictureBox1.Refresh();
-                    draw();
                 }
             }
         }
@@ -252,18 +232,9 @@ namespace IntelligentScissors
                     for (int i = 1; i < path.Count; i++)
                     {
                         complete_path.Add(path[i - 1]);
-
-                        Graphics g1 = pictureBox1.CreateGraphics();
-                        Pen p = new Pen(Color.Red, 2);
-                        float x1 = path[i - 1] % m;
-                        float y1 = path[i - 1] / m;
-                        float x2 = path[i] % m;
-                        float y2 = path[i] / m;
-                        g1.DrawLine(p, x1, y1, x2, y2);
                     }
                     complete_path.Add(path[path.Count - 1]);
                     pictureBox1.Refresh();
-                    draw();
                 }
             }
         }
@@ -274,46 +245,25 @@ namespace IntelligentScissors
                 int node = e.Y * m + e.X;
                 if (stop == false && anchor_points.Count!=0 && in_box(anchor_points[anchor_points.Count - 1], node))
                 {
-                    pictureBox1.Refresh();
-                    draw();
                     if (anchor_points.Count > 0)
                     {
                         int anc = anchor_points[anchor_points.Count - 1];
                         curr_pre = dijkstra(anc, node);
                         path = backtracking(curr_pre, node);
+                        pictureBox1.Refresh();
                         for (int i = 1; i < path.Count; i++)
                         {
-                            Graphics g1 = pictureBox1.CreateGraphics();
                             Pen p = new Pen(Color.Red, 2);
                             float x1 = path[i - 1] % m;
                             float y1 = path[i - 1] / m;
                             float x2 = path[i] % m;
                             float y2 = path[i] / m;
-                            g1.DrawLine(p, x1, y1, x2, y2);
+                            g_free.DrawLine(p, x1, y1, x2, y2);
                         }
                     }
                 }
                 textBox1.Text = e.X.ToString();
                 textBox2.Text = e.Y.ToString();
-            }
-        }
-        public void draw()
-        {
-            for (int i = 1; i < complete_path.Count; i++)
-            {
-                Graphics g1 = pictureBox1.CreateGraphics();
-                Pen p = new Pen(Color.Cyan, 2);
-                float x1 = complete_path[i - 1] % m;
-                float y1 = complete_path[i - 1] / m;
-                float x2 = complete_path[i] % m;
-                float y2 = complete_path[i] / m;
-                g1.DrawLine(p, x1, y1, x2, y2);
-            }
-            for (int i = 0; i < anchor_points.Count; i++)
-            {
-                Point anchorsize = new Point(5, 5);
-                Graphics g = pictureBox1.CreateGraphics();
-                g.FillEllipse(Brushes.Green, new Rectangle(new Point(anchor_points[i] % m - anchorsize.X / 2, anchor_points[i] / m - anchorsize.Y / 2), new Size(anchorsize)));
             }
         }
         private void button1_Click(object sender, EventArgs e)
@@ -335,13 +285,32 @@ namespace IntelligentScissors
             int y2 = n2 / m;
             return Math.Abs(x1 - x2) <150 && Math.Abs(y1 - y2) < 150;
         }
+        private void pictureBox1_Paint(object sender, PaintEventArgs e)
+        {
+            if (ImageMatrix != null)
+            {
+                var g = e.Graphics;
+                for (int i = 1; i < complete_path.Count; i++)
+                {
+                    Pen p = new Pen(Color.Cyan, 2);
+                    float x1 = complete_path[i - 1] % m;
+                    float y1 = complete_path[i - 1] / m;
+                    float x2 = complete_path[i] % m;
+                    float y2 = complete_path[i] / m;
+                    g.DrawLine(p, x1, y1, x2, y2);
+                }
+                for (int i = 0; i < anchor_points.Count; i++)
+                {
+                    Point anchorsize = new Point(5, 5);
+                    g.FillEllipse(Brushes.Green, new Rectangle(new Point(anchor_points[i] % m - anchorsize.X / 2, anchor_points[i] / m - anchorsize.Y / 2), new Size(anchorsize)));
+                }
+            }
+        }
         private void panel1_Scroll(object sender, ScrollEventArgs e)
         {
-            draw();
         }
         private void pictureBox1_MouseHover(object sender, EventArgs e)
         {
-            draw();
         }
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -374,10 +343,6 @@ namespace IntelligentScissors
         }
 
         private void pictureBox1_LoadProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-        }
-
-        private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
         }
 
