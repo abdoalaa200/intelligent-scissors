@@ -1,0 +1,5 @@
+C:\Users\abdo\Downloads\algo\Intelligent Scissors Startup Code\[TEMPLATE] IntelligentScissors\IntelligentScissors\obj\Release\IntelligentScissors.csprojAssemblyReference.cache
+C:\Users\abdo\Downloads\algo\Intelligent Scissors Startup Code\[TEMPLATE] IntelligentScissors\IntelligentScissors\obj\Release\IntelligentScissors.MainForm.resources
+C:\Users\abdo\Downloads\algo\Intelligent Scissors Startup Code\[TEMPLATE] IntelligentScissors\IntelligentScissors\obj\Release\IntelligentScissors.Properties.Resources.resources
+C:\Users\abdo\Downloads\algo\Intelligent Scissors Startup Code\[TEMPLATE] IntelligentScissors\IntelligentScissors\obj\Release\IntelligentScissors.csproj.GenerateResource.cache
+C:\Users\abdo\Downloads\algo\Intelligent Scissors Startup Code\[TEMPLATE] IntelligentScissors\IntelligentScissors\obj\Release\IntelligentScissors.csproj.CoreCompileInputs.cache

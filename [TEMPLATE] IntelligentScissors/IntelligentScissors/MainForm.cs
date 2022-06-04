@@ -21,7 +21,7 @@ namespace IntelligentScissors
         List<int> curr_pre = new List<int>();
         bool stop = false;
         int n, m;
-        Stopwatch sp = new Stopwatch();
+        int mn_x=999999, mn_y=999999, mx_x=-999999, mx_y = -999999;
         public MainForm()
         {
             InitializeComponent();
@@ -37,92 +37,9 @@ namespace IntelligentScissors
                 n = ImageOperations.GetHeight(ImageMatrix);
                 m = ImageOperations.GetWidth(ImageMatrix);
                 ImageOperations.DisplayImage(ImageMatrix, pictureBox1);
-                //construct_graph();
                 txtWidth.Text = ImageOperations.GetWidth(ImageMatrix).ToString();
                 txtHeight.Text = ImageOperations.GetHeight(ImageMatrix).ToString();
             }
-        }
-        private void btnGaussSmooth_Click(object sender, EventArgs e)
-        {
-            double sigma = double.Parse(txtGaussSigma.Text);
-            int maskSize = (int)nudMaskSize.Value;
-            ImageMatrix = ImageOperations.GaussianFilter1D(ImageMatrix, maskSize, sigma);
-            ImageOperations.DisplayImage(ImageMatrix, pictureBox2);
-        }
-        public void construct_graph()
-        {
-            sp.Start();
-            StreamWriter sr = new StreamWriter("graph.txt");
-            List<KeyValuePair<int, double>> l = new List<KeyValuePair<int, double>>();
-            KeyValuePair<int, double> kvp;
-            double weight;
-            int node,node1;
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < m; j++)
-                {
-                    l.Clear();
-                    var G = ImageOperations.CalculatePixelEnergies(j, i, ImageMatrix);
-                    node = i * m + j;
-                    //bottom
-                    if (i != n - 1)
-                    {
-                        
-                        node1 = (i + 1) * m + j;
-                        if (G.Y == 0)
-                            weight = 10000000000000000;
-                        else
-                            weight = 1 / (G.Y);
-                        kvp = new KeyValuePair<int, double>(node1, weight);
-                        l.Add(kvp);
-                    }
-                    //right
-                    if (j != m - 1)
-                    {
-                        node1 = i * m + (j + 1);
-                        if (G.X == 0)
-                            weight = 10000000000000000;
-                        else
-                            weight = 1 / (G.X);
-                        kvp = new KeyValuePair<int, double>(node1, weight);
-                        l.Add(kvp);
-                    }
-                    //top
-                    if (i != 0)
-                    {
-                        G = ImageOperations.CalculatePixelEnergies(j, i - 1, ImageMatrix);
-                        node1 = (i - 1) * m + j;
-                        if (G.Y == 0)
-                            weight = 10000000000000000;
-                        else
-                            weight = 1 / (G.Y);
-                        kvp = new KeyValuePair<int, double>(node1, weight);
-                        l.Add(kvp);
-                    }
-                    //left
-                    if (j != 0)
-                    {
-                        G = ImageOperations.CalculatePixelEnergies(j - 1, i, ImageMatrix);
-                        node1 = i * m + (j - 1);
-                        if (G.X == 0)
-                            weight = 10000000000000000;
-                        else
-                            weight = 1 / (G.X);
-                        kvp = new KeyValuePair<int, double>(node1, weight);
-                        l.Add(kvp);
-                    }
-                    sr.Write(node.ToString() + "|edges:");
-                    for (int x = 0; x < l.Count; x++)
-                    {
-                        sr.Write("(" + node.ToString() + ',' + l[x].Key.ToString() + ',' + l[x].Value.ToString() + ')');
-                    }
-                    sr.WriteLine("");
-                }
-            }
-            sr.WriteLine("Graph construction took: " + (sp.ElapsedMilliseconds/1000).ToString()+ " seconds.");
-            sr.Flush();
-            sr.Close();
-            sp.Stop();
         }
         public List<KeyValuePair<int, double>> get_children(int node)
         {
@@ -268,8 +185,9 @@ namespace IntelligentScissors
                     for (int i = 1; i < path.Count; i++)
                     {
                         complete_path.Add(path[i - 1]);
+
                         Graphics g1 = pictureBox1.CreateGraphics();
-                        Pen p = new Pen(Color.Red, 2);
+                        Pen p = new Pen(Color.Cyan, 2);
                         float x1 = path[i - 1] % m;
                         float y1 = path[i - 1] / m;
                         float x2 = path[i] % m;
@@ -277,6 +195,7 @@ namespace IntelligentScissors
                         g1.DrawLine(p, x1, y1, x2, y2);
                     }
                     complete_path.Add(path[path.Count - 1]);
+
                     anchor_points.Add(node);
                     Graphics g = pictureBox1.CreateGraphics();
                     Point anchorsize = new Point(5, 5);
@@ -288,6 +207,35 @@ namespace IntelligentScissors
                     Graphics g = pictureBox1.CreateGraphics();
                     Point anchorsize = new Point(5, 5);
                     g.FillEllipse(Brushes.Green, new Rectangle(new Point(e.X - anchorsize.X / 2, e.Y - anchorsize.Y / 2), new Size(anchorsize)));
+                }
+            }
+        }
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (pictureBox1.Image != null)
+            {
+                if (stop == false && anchor_points.Count >= 2 && in_box(anchor_points[anchor_points.Count - 1], anchor_points[0]))
+                {
+                    stop = true;
+                    int node = anchor_points[0];
+                    int anc = anchor_points[anchor_points.Count - 1];
+                    curr_pre = dijkstra(anc, node);
+                    path = backtracking(curr_pre, node);
+                    for (int i = 1; i < path.Count; i++)
+                    {
+                        complete_path.Add(path[i - 1]);
+
+                        Graphics g1 = pictureBox1.CreateGraphics();
+                        Pen p = new Pen(Color.Red, 2);
+                        float x1 = path[i - 1] % m;
+                        float y1 = path[i - 1] / m;
+                        float x2 = path[i] % m;
+                        float y2 = path[i] / m;
+                        g1.DrawLine(p, x1, y1, x2, y2);
+                    }
+                    complete_path.Add(path[path.Count - 1]);
+                    pictureBox1.Refresh();
+                    draw();
                 }
             }
         }
@@ -305,6 +253,7 @@ namespace IntelligentScissors
                     for (int i = 1; i < path.Count; i++)
                     {
                         complete_path.Add(path[i - 1]);
+
                         Graphics g1 = pictureBox1.CreateGraphics();
                         Pen p = new Pen(Color.Red, 2);
                         float x1 = path[i - 1] % m;
@@ -317,13 +266,6 @@ namespace IntelligentScissors
                     pictureBox1.Refresh();
                     draw();
                 }
-                /*StreamWriter sr = new StreamWriter("path.txt");
-                for (int i = 0; i < complete_path.Count; i++)
-                {
-                    sr.WriteLine('(' + complete_path[i].ToString() + ',' + (complete_path[i] % m).ToString() + ',' + (complete_path[i] / m).ToString() + ')');
-                }
-                sr.Flush();
-                sr.Close();*/
             }
         }
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
@@ -343,7 +285,7 @@ namespace IntelligentScissors
                         for (int i = 1; i < path.Count; i++)
                         {
                             Graphics g1 = pictureBox1.CreateGraphics();
-                            Pen p = new Pen(Color.Green, 2);
+                            Pen p = new Pen(Color.Red, 2);
                             float x1 = path[i - 1] % m;
                             float y1 = path[i - 1] / m;
                             float x2 = path[i] % m;
@@ -354,7 +296,6 @@ namespace IntelligentScissors
                 }
                 textBox1.Text = e.X.ToString();
                 textBox2.Text = e.Y.ToString();
-                draw();
             }
         }
         public void draw()
@@ -362,7 +303,7 @@ namespace IntelligentScissors
             for (int i = 1; i < complete_path.Count; i++)
             {
                 Graphics g1 = pictureBox1.CreateGraphics();
-                Pen p = new Pen(Color.Red, 2);
+                Pen p = new Pen(Color.Cyan, 2);
                 float x1 = complete_path[i - 1] % m;
                 float y1 = complete_path[i - 1] / m;
                 float x2 = complete_path[i] % m;
@@ -401,6 +342,7 @@ namespace IntelligentScissors
         }
         private void pictureBox1_MouseHover(object sender, EventArgs e)
         {
+            draw();
         }
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -422,6 +364,37 @@ namespace IntelligentScissors
         {
 
         }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+            
+        }
+
+        private void panel1_VisibleChanged(object sender, EventArgs e)
+        {
+        }
+
+        private void pictureBox1_LoadProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+        }
+
+        private void pictureBox1_Paint(object sender, PaintEventArgs e)
+        {
+        }
+
+        private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void pictureBox1_LoadCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+        }
+
+        private void pictureBox1_BindingContextChanged(object sender, EventArgs e)
+        {
+        }
+
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
         }
