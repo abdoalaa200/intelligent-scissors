@@ -21,7 +21,6 @@ namespace IntelligentScissors
         List<int> curr_pre = new List<int>();
         bool stop = false;
         int n, m;
-        int mn_x=999999, mn_y=999999, mx_x=-999999, mx_y = -999999;
         public MainForm()
         {
             InitializeComponent();
