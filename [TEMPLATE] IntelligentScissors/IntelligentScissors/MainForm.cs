@@ -16,7 +16,9 @@ namespace IntelligentScissors
     public partial class MainForm : Form
     {
         RGBPixel[,] ImageMatrix;
+        RGBPixel[,] SelectedMatrix;
         SortedDictionary<double, Queue<KeyValuePair<int, int>>> shortest = new SortedDictionary<double, Queue<KeyValuePair<int, int>>>();
+        SortedDictionary<int, bool> vis = new SortedDictionary<int, bool>();
         List<int> anchor_points = new List<int>();
         List<int> complete_path = new List<int>();
         List<int> path = new List<int>();
@@ -272,9 +274,11 @@ namespace IntelligentScissors
         }
         void reset()
         {
+            vis.Clear();
             complete_path.Clear();
             anchor_points.Clear();
             pictureBox1.Refresh();
+            pictureBox2.Image = null;
             stop = false;
         }
         bool in_box(int n1,int n2)
@@ -284,6 +288,64 @@ namespace IntelligentScissors
             int x2 = n2 % m;
             int y2 = n2 / m;
             return Math.Abs(x1 - x2) <150 && Math.Abs(y1 - y2) < 150;
+        }
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (stop == true)
+            {
+                int min_x = int.MaxValue, min_y =int.MaxValue,max_x=-1,max_y=-1;
+                for (int i = 0; i < complete_path.Count; i++)
+                {
+                    vis[complete_path[i]] = true;
+                    if (complete_path[i] % m < min_x)
+                        min_x = complete_path[i] % m;
+                    if (complete_path[i] / m < min_y)
+                        min_y = complete_path[i] / m;
+                    if (complete_path[i] % m > max_x)
+                        max_x = complete_path[i] % m;
+                    if (complete_path[i] / m > max_y)
+                        max_y = complete_path[i] / m;
+                }
+                int x1 = complete_path[0] % m;
+                int x2 = complete_path[(complete_path.Count - 1) / 2] % m;
+                int y1 = complete_path[0] / m;
+                int y2 = complete_path[(complete_path.Count - 1) / 2] / m;
+                int x = (x1 + x2) / 2;
+                int y = (y1 + y2) / 2;
+                int start = y * m + x;
+                flood_fill(start);
+                SelectedMatrix = new RGBPixel[max_y-min_y+5, max_x-min_x+5];
+                for (int i = 0; i < max_y - min_y + 5; i++)
+                {
+                    for (int j = 0; j < max_x - min_x + 5; j++)
+                    {
+                        SelectedMatrix[i, j].blue = 255;
+                        SelectedMatrix[i, j].red = 255;
+                        SelectedMatrix[i, j].green = 255;
+                    }
+                }
+                foreach (var i in vis)
+                {
+                    SelectedMatrix[(i.Key / m)-min_y, (i.Key % m) - min_x] = ImageMatrix[i.Key / m, i.Key % m];
+                }
+                ImageOperations.DisplayImage(SelectedMatrix, pictureBox2);
+            }
+        }
+        void flood_fill(int node)
+        {
+            Stack<int> q = new Stack<int>();
+            q.Push(node);
+            while (q.Count != 0)
+            {
+                int x = q.Pop();
+                vis[x] = true;
+                List<KeyValuePair<int, double>> l = get_children(x);
+                for (int i = 0; i < l.Count; i++)
+                {
+                    if(vis.ContainsKey(l[i].Key)==false)
+                        q.Push(l[i].Key);
+                }
+            }
         }
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
@@ -362,6 +424,7 @@ namespace IntelligentScissors
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
         }
+
         private void label6_Click(object sender, EventArgs e)
         {
 
