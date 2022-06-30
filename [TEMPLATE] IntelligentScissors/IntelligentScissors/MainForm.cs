@@ -294,25 +294,27 @@ namespace IntelligentScissors
             if (stop == true)
             {
                 int min_x = int.MaxValue, min_y =int.MaxValue,max_x=-1,max_y=-1;
+                int min_x_p = -1, min_y_p = -1, max_x_p = -1, max_y_p = -1;
                 for (int i = 0; i < complete_path.Count; i++)
                 {
                     vis[complete_path[i]] = true;
                     if (complete_path[i] % m < min_x)
-                        min_x = complete_path[i] % m;
+                    { min_x = complete_path[i] % m; min_x_p = complete_path[i]; }
                     if (complete_path[i] / m < min_y)
-                        min_y = complete_path[i] / m;
+                    { min_y = complete_path[i] / m; min_y_p = complete_path[i]; }
                     if (complete_path[i] % m > max_x)
-                        max_x = complete_path[i] % m;
+                    { max_x = complete_path[i] % m; max_x_p = complete_path[i]; }
                     if (complete_path[i] / m > max_y)
-                        max_y = complete_path[i] / m;
+                    { max_y = complete_path[i] / m; max_y_p = complete_path[i]; }
                 }
-                int x1 = complete_path[0] % m;
-                int x2 = complete_path[(complete_path.Count - 1) / 2] % m;
-                int y1 = complete_path[0] / m;
-                int y2 = complete_path[(complete_path.Count - 1) / 2] / m;
-                int x = (x1 + x2) / 2;
-                int y = (y1 + y2) / 2;
-                int start = y * m + x;
+                int start=-1;
+                int y = (max_y + min_y) / 2;
+                for(int i=0; i<m; i++)
+                {
+                    int node = y * m+i;
+                    if (vis.ContainsKey(node) == true && vis.ContainsKey(node + 1) == false)
+                    { start = node + 1; break; }
+                }
                 flood_fill(start);
                 SelectedMatrix = new RGBPixel[max_y-min_y+5, max_x-min_x+5];
                 for (int i = 0; i < max_y - min_y + 5; i++)
