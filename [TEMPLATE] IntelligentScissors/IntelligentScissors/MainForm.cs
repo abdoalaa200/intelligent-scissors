@@ -309,28 +309,31 @@ namespace IntelligentScissors
                 }
                 int start=-1;
                 int y = (max_y + min_y) / 2;
-                for(int i=0; i<m; i++)
+                for(int i=min_x; i<max_x; i++)
                 {
                     int node = y * m+i;
                     if (vis.ContainsKey(node) == true && vis.ContainsKey(node + 1) == false)
                     { start = node + 1; break; }
                 }
-                flood_fill(start);
-                SelectedMatrix = new RGBPixel[max_y-min_y+5, max_x-min_x+5];
-                for (int i = 0; i < max_y - min_y + 5; i++)
+                if (start != -1)
                 {
-                    for (int j = 0; j < max_x - min_x + 5; j++)
+                    flood_fill(start);
+                    SelectedMatrix = new RGBPixel[max_y - min_y + 5, max_x - min_x + 5];
+                    for (int i = 0; i < max_y - min_y + 5; i++)
                     {
-                        SelectedMatrix[i, j].blue = 255;
-                        SelectedMatrix[i, j].red = 255;
-                        SelectedMatrix[i, j].green = 255;
+                        for (int j = 0; j < max_x - min_x + 5; j++)
+                        {
+                            SelectedMatrix[i, j].blue = 255;
+                            SelectedMatrix[i, j].red = 255;
+                            SelectedMatrix[i, j].green = 255;
+                        }
                     }
+                    foreach (var i in vis)
+                    {
+                        SelectedMatrix[(i.Key / m) - min_y, (i.Key % m) - min_x] = ImageMatrix[i.Key / m, i.Key % m];
+                    }
+                    ImageOperations.DisplayImage(SelectedMatrix, pictureBox2);
                 }
-                foreach (var i in vis)
-                {
-                    SelectedMatrix[(i.Key / m)-min_y, (i.Key % m) - min_x] = ImageMatrix[i.Key / m, i.Key % m];
-                }
-                ImageOperations.DisplayImage(SelectedMatrix, pictureBox2);
             }
         }
         void flood_fill(int node)
