@@ -23,6 +23,7 @@ namespace IntelligentScissors
         List<int> complete_path = new List<int>();
         List<int> path = new List<int>();
         List<int> curr_pre = new List<int>();
+        SaveFileDialog sf = new SaveFileDialog();
         bool stop = false;
         int n, m;
         Graphics g_free;
@@ -289,6 +290,17 @@ namespace IntelligentScissors
             int y2 = n2 / m;
             return Math.Abs(x1 - x2) <150 && Math.Abs(y1 - y2) < 150;
         }
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (pictureBox2.Image != null)
+            {
+                sf.Filter = "JPG(*.JPG)|*.jpg";
+                if (sf.ShowDialog() == DialogResult.OK)
+                {
+                    pictureBox2.Image.Save(sf.FileName);
+                }
+            }
+        }
         private void button3_Click(object sender, EventArgs e)
         {
             if (stop == true)
@@ -318,10 +330,10 @@ namespace IntelligentScissors
                 if (start != -1)
                 {
                     flood_fill(start);
-                    SelectedMatrix = new RGBPixel[max_y - min_y + 5, max_x - min_x + 5];
-                    for (int i = 0; i < max_y - min_y + 5; i++)
+                    SelectedMatrix = new RGBPixel[max_y - min_y + 2, max_x - min_x + 2];
+                    for (int i = 0; i < max_y - min_y + 2; i++)
                     {
-                        for (int j = 0; j < max_x - min_x + 5; j++)
+                        for (int j = 0; j < max_x - min_x + 2; j++)
                         {
                             SelectedMatrix[i, j].blue = 255;
                             SelectedMatrix[i, j].red = 255;
